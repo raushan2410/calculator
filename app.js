@@ -14,13 +14,15 @@ var operator = null;
 
 
 
-
 for(var i=0;i<buttons.length;i++) {
+
     buttons[i].addEventListener('click',function() {
+
         var value = this.getAttribute('data-value');
+
         if(display.innerText=="inValid"||display.innerText=="Infinity") display.innerText= value;
-        else if(operator!=null&&(value=='+'||value=='-'||value=='*'||value=='/'||value=='%')) {
-            value=operator;
+        else if(operand2==null&&operator!=null&&(value=='+'||value=='-'||value=='*'||value=='/'||value=='%')) {
+            display.innerText = display.innerText.substring(0,display.innerText.length-1) + value;
         }
         else display.innerText+=value;
 
@@ -32,12 +34,37 @@ for(var i=0;i<buttons.length;i++) {
         }
         else if(value=="sign") {
             operand1=parseFloat(display.innerText);
+            if(Number.isNaN(operand1)==true)   {
+                operand1=0;
+            }
             display.innerText = -operand1;
         }
 
         else if(value=='+'||value=='-'||value=='*'||value=='/'||value=='%') {
-            operand1 = parseFloat(display.innerText);
-            operator = value;
+            if(operand2!=null&&operator!=null) {
+                operand2 = parseFloat(operand2);
+                var string;
+                if(operator=='+') string= "operand1 + operand2";
+                else if(operator=='-') string= "operand1 - operand2";
+                else if(operator=='*') string= "operand1 * operand2";
+                else if(operator=='/') string= "operand1 / operand2";
+                else if(operator=='%') string= "operand1 % operand2";
+                var res = eval(string);
+                if(Number.isNaN(res)==true) {
+                    display.innerText="inValid";
+                }
+                else    display.innerText=res+value;
+                operand1 = parseFloat(res);
+                operand2=null;
+                operator=value;
+            }
+            else {
+                operand1 = parseFloat(display.innerText);
+                if(Number.isNaN(operand1)==true)   {
+                    operand1=0;
+                }
+                operator = value;
+            }
             // display.innerText += value;
         }
 
@@ -52,7 +79,7 @@ for(var i=0;i<buttons.length;i++) {
                 else if(operator=='/') string= "operand1 / operand2";
                 else if(operator=='%') string= "operand1 % operand2";
                 var res = eval(string);
-                if(res==NaN) {
+                if(Number.isNaN(res)==true) {
                     display.innerText="inValid";
                 }
                 else    display.innerText=res;
